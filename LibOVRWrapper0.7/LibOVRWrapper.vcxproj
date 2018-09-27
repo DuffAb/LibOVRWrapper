@@ -201,7 +201,7 @@
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LibOVR\Projects\Windows\VS2015\LibOVR.vcxproj">
+    <ProjectReference Include="..\LibREV\Projects\Windows\VS2015\LibOVR.vcxproj">
       <Project>{ea50e705-5113-49e5-b105-2512edc8ddc6}</Project>
     </ProjectReference>
   </ItemGroup>

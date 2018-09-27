@@ -44,9 +44,9 @@ namespace attrs = boost::log::attributes;
 namespace keywords = boost::log::keywords;
 
 
-#include "../LibOVR/Include/OVR_CAPI.h"
-#include "../LibOVR/Include/OVR_Version.h"
-#include "../LibOVR/Include/OVR_ErrorCode.h"
+#include "../LibREV/Include/REV_CAPI.h"
+#include "../LibREV/Include/REV_Version.h"
+#include "../LibREV/Include/REV_ErrorCode.h"
 
-#include "../LibOVR/Include/OVR_CAPI_D3D.h"   
-#include "../LibOVR/Include/OVR_CAPI_GL.h"  
+#include "../LibREV/Include/REV_CAPI_D3D.h"   
+#include "../LibREV/Include/REV_CAPI_GL.h"  

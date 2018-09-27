@@ -14,53 +14,53 @@
 
 #include "shimhelper.h"
 
-ovrTextureFormat1_3 getOVRFormat(DXGI_FORMAT format) {
+revTextureFormat getOVRFormat(DXGI_FORMAT format) {
 	switch (format) {
 		case DXGI_FORMAT_B5G6R5_UNORM:
-			return OVR_FORMAT_B5G6R5_UNORM;
+			return REV_FORMAT_B5G6R5_UNORM;
 		case DXGI_FORMAT_B5G5R5A1_UNORM:
-			return OVR_FORMAT_B5G5R5A1_UNORM;
+			return REV_FORMAT_B5G5R5A1_UNORM;
 		case DXGI_FORMAT_B4G4R4A4_UNORM:
-			return OVR_FORMAT_B4G4R4A4_UNORM;
+			return REV_FORMAT_B4G4R4A4_UNORM;
 		case DXGI_FORMAT_R8G8B8A8_UNORM:
-			return OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+			return REV_FORMAT_R8G8B8A8_UNORM_SRGB;
 		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
-			return OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+			return REV_FORMAT_R8G8B8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8A8_UNORM:
-			return OVR_FORMAT_B8G8R8A8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
-			return OVR_FORMAT_B8G8R8A8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8X8_UNORM:
-			return OVR_FORMAT_B8G8R8X8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8X8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
-			return OVR_FORMAT_B8G8R8X8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8X8_UNORM_SRGB;
 		case DXGI_FORMAT_R16G16B16A16_FLOAT:
-			return OVR_FORMAT_R16G16B16A16_FLOAT;
+			return REV_FORMAT_R16G16B16A16_FLOAT;
 		case DXGI_FORMAT_D16_UNORM:
-			return OVR_FORMAT_D16_UNORM;
+			return REV_FORMAT_D16_UNORM;
 		case DXGI_FORMAT_D24_UNORM_S8_UINT:
-			return OVR_FORMAT_D24_UNORM_S8_UINT;
+			return REV_FORMAT_D24_UNORM_S8_UINT;
 		case DXGI_FORMAT_D32_FLOAT:
-			return OVR_FORMAT_D32_FLOAT;
+			return REV_FORMAT_D32_FLOAT;
 		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
-			return OVR_FORMAT_D32_FLOAT_S8X24_UINT;
+			return REV_FORMAT_D32_FLOAT_S8X24_UINT;
 		case DXGI_FORMAT_R32_TYPELESS:
-			return OVR_FORMAT_D32_FLOAT;
+			return REV_FORMAT_D32_FLOAT;
 		case DXGI_FORMAT_R24G8_TYPELESS:
-			return OVR_FORMAT_D24_UNORM_S8_UINT;
+			return REV_FORMAT_D24_UNORM_S8_UINT;
 		case DXGI_FORMAT_R16_TYPELESS:
-			return OVR_FORMAT_D16_UNORM;
+			return REV_FORMAT_D16_UNORM;
 		case DXGI_FORMAT_R32G8X24_TYPELESS:
-			return OVR_FORMAT_D32_FLOAT_S8X24_UINT;
+			return REV_FORMAT_D32_FLOAT_S8X24_UINT;
 		case DXGI_FORMAT_R8G8B8A8_TYPELESS:
-			return OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+			return REV_FORMAT_R8G8B8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8A8_TYPELESS:
-			return OVR_FORMAT_B8G8R8A8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8X8_TYPELESS:
-			return OVR_FORMAT_B8G8R8X8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8X8_UNORM_SRGB;
 	}
 	
-	return OVR_FORMAT_UNKNOWN;		
+	return REV_FORMAT_UNKNOWN;		
 }
 
 inline DXGI_FORMAT getShaderResourceFormat(DXGI_FORMAT format)
@@ -91,8 +91,8 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateSwapTextureSetD3D11(ovrHmd hmd,
 	D3D11_TEXTURE2D_DESC descClone;
 	memcpy(&descClone, desc, sizeof(D3D11_TEXTURE2D_DESC));
 
-	ovrTextureSwapChainDesc1_3 d;
-	d.Type = ovrTexture_2D;
+	revTextureSwapChainDesc d;
+	d.Type = revTexture_2D;
 	d.ArraySize = desc->ArraySize;
 	
 	d.Format = getOVRFormat(desc->Format);
@@ -110,22 +110,22 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateSwapTextureSetD3D11(ovrHmd hmd,
 	d.MiscFlags = 0;
 	
 	switch (d.Format) {
-	case OVR_FORMAT_R8G8B8A8_UNORM_SRGB:	
-	case OVR_FORMAT_B8G8R8A8_UNORM_SRGB:	
-	case OVR_FORMAT_B8G8R8X8_UNORM_SRGB:
-		d.MiscFlags |= ovrTextureMisc_DX_Typeless;		
+	case REV_FORMAT_R8G8B8A8_UNORM_SRGB:	
+	case REV_FORMAT_B8G8R8A8_UNORM_SRGB:	
+	case REV_FORMAT_B8G8R8X8_UNORM_SRGB:
+		d.MiscFlags |= revTextureMisc_DX_Typeless;		
 		break;
 	}
 
 	if (getWrapperSettings()->srgbCorrectionEnabled) {
 		switch (d.Format) {
-		case OVR_FORMAT_R8G8B8A8_UNORM_SRGB:
+		case REV_FORMAT_R8G8B8A8_UNORM_SRGB:
 			descClone.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			break;
-		case OVR_FORMAT_B8G8R8A8_UNORM_SRGB:
+		case REV_FORMAT_B8G8R8A8_UNORM_SRGB:
 			descClone.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 			break;
-		case OVR_FORMAT_B8G8R8X8_UNORM_SRGB:
+		case REV_FORMAT_B8G8R8X8_UNORM_SRGB:
 			descClone.Format = DXGI_FORMAT_B8G8R8X8_UNORM;
 			break;
 		}
@@ -140,8 +140,8 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateSwapTextureSetD3D11(ovrHmd hmd,
 		d.BindFlags |= ovrTextureBind_DX_UnorderedAccess;
 	}*/
 	if (desc->BindFlags & D3D11_BIND_DEPTH_STENCIL) {
-		d.MiscFlags |= ovrTextureMisc_DX_Typeless;
-		d.BindFlags |= ovrTextureBind_DX_DepthStencil;
+		d.MiscFlags |= revTextureMisc_DX_Typeless;
+		d.BindFlags |= revTextureBind_DX_DepthStencil;
 	}	
 	if (desc->BindFlags & D3D11_BIND_SHADER_RESOURCE) {
 		
@@ -153,7 +153,7 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateSwapTextureSetD3D11(ovrHmd hmd,
 	ovrTextureSwapChainWrapper* chainwrapper = (ovrTextureSwapChainWrapper*)malloc(sizeof(ovrTextureSwapChainWrapper));
 	device->GetImmediateContext(&chainwrapper->pContext);
 
-	ovrResult result = ovr_CreateTextureSwapChainDX1_3((ovrSession1_3)hmd->Handle, (IUnknown*)device, &d, &chainwrapper->swapChain);
+	ovrResult result = rev_CreateTextureSwapChainDX((revSession)hmd->Handle, (IUnknown*)device, &d, &chainwrapper->swapChain);
 
 	if (!OVR_SUCCESS(result)) {
 		BOOST_LOG_TRIVIAL(error) << "ovrHmd_CreateSwapTextureSetD3D11 could not create TextureSwapChain";
@@ -162,9 +162,9 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateSwapTextureSetD3D11(ovrHmd hmd,
 	
 	ovrSwapTextureSet* ts = (ovrSwapTextureSet*)malloc(sizeof(ovrSwapTextureSet));
 
-	setChain((ovrSession1_3)hmd->Handle, ts, chainwrapper);
+	setChain((revSession)hmd->Handle, ts, chainwrapper);
 
-	ovr_GetTextureSwapChainLength1_3((ovrSession1_3)hmd->Handle, chainwrapper->swapChain, &chainwrapper->textureCount);
+	rev_GetTextureSwapChainLength((revSession)hmd->Handle, chainwrapper->swapChain, &chainwrapper->textureCount);
 
 	chainwrapper->textures = (ID3D11Texture2D**)calloc(chainwrapper->textureCount, sizeof(ID3D11Texture2D*));
 
@@ -174,7 +174,7 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateSwapTextureSetD3D11(ovrHmd hmd,
 
 	for (int i = 0; i < chainwrapper->textureCount; ++i)
 	{		
-		result = ovr_GetTextureSwapChainBufferDX1_3((ovrSession1_3)hmd->Handle, chainwrapper->swapChain, i, IID_ID3D11Texture2D, (void**)&chainwrapper->textures[i]);
+		result = rev_GetTextureSwapChainBufferDX((revSession)hmd->Handle, chainwrapper->swapChain, i, IID_ID3D11Texture2D, (void**)&chainwrapper->textures[i]);
 		if (!OVR_SUCCESS(result)) {
 			BOOST_LOG_TRIVIAL(error) << "ovrHmd_CreateSwapTextureSetD3D11 could not allocate TextureSwapChainBuffer";
 			return result;
@@ -225,7 +225,7 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateMirrorTextureD3D11(ovrHmd hmd,
 	ovrTexture** outMirrorTexture) {
 	BOOST_LOG_TRIVIAL(trace) << "ovrHmd_CreateMirrorTextureD3D11 format " << desc->Format << " samples " << desc->SampleDesc.Count << " bindflags " << desc->BindFlags << " miscflags " << desc->MiscFlags;
 
-	ovrMirrorTextureDesc1_3 d;
+	revMirrorTextureDesc d;
 	
 	d.Format = getOVRFormat(desc->Format);
 
@@ -235,20 +235,20 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateMirrorTextureD3D11(ovrHmd hmd,
 	d.MiscFlags = 0;
 
 	switch (d.Format) {
-	case OVR_FORMAT_R8G8B8A8_UNORM_SRGB:
-	case OVR_FORMAT_B8G8R8A8_UNORM_SRGB:
-	case OVR_FORMAT_B8G8R8X8_UNORM_SRGB:
-		d.MiscFlags |= ovrTextureMisc_DX_Typeless;		
+	case REV_FORMAT_R8G8B8A8_UNORM_SRGB:
+	case REV_FORMAT_B8G8R8A8_UNORM_SRGB:
+	case REV_FORMAT_B8G8R8X8_UNORM_SRGB:
+		d.MiscFlags |= revTextureMisc_DX_Typeless;		
 		break;
 	}
 
-	ovrMirrorTexture1_3* mirror = (ovrMirrorTexture1_3*)malloc(sizeof(ovrMirrorTexture1_3));
+	revMirrorTexture* mirror = (revMirrorTexture*)malloc(sizeof(revMirrorTexture));
 
-	ovrResult result = ovr_CreateMirrorTextureDX1_3((ovrSession1_3)hmd->Handle, (IUnknown*)device, &d, mirror);
+	ovrResult result = rev_CreateMirrorTextureDX((revSession)hmd->Handle, (IUnknown*)device, &d, mirror);
 
 	if (!OVR_SUCCESS(result)) {
-		ovrErrorInfo1_3 info;
-		ovr_GetLastErrorInfo1_3(&info);
+		revErrorInfo info;
+		rev_GetLastErrorInfo(&info);
 
 		BOOST_LOG_TRIVIAL(error) << "ovrHmd_CreateMirrorTextureD3D11 could not allocate Mirrortexture:" << info.ErrorString;
 		return result;
@@ -257,7 +257,7 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateMirrorTextureD3D11(ovrHmd hmd,
 	ovrD3D11Texture* ovrtext = (ovrD3D11Texture*)malloc(sizeof(ovrD3D11Texture));
 
 	ID3D11Texture2D* texture = 0;	
-	ovr_GetMirrorTextureBufferDX1_3((ovrSession1_3)hmd->Handle, *mirror, IID_ID3D11Texture2D, (void**)&texture);
+	rev_GetMirrorTextureBufferDX((revSession)hmd->Handle, *mirror, IID_ID3D11Texture2D, (void**)&texture);
 
 	ovrtext->D3D11.pTexture = texture;
 

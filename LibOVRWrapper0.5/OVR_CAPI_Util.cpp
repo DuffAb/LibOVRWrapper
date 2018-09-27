@@ -150,7 +150,7 @@ OVR_PUBLIC_FUNCTION(double) ovr_WaitTillTime(double absTime)
 {
 	BOOST_LOG_TRIVIAL(trace) << "ovr_WaitTillTime";
 
-    double       initialTime = ovr_GetTimeInSeconds1_3();
+    double       initialTime = rev_GetTimeInSeconds();
     double       newTime     = initialTime;
     
     while(newTime < absTime)
@@ -166,7 +166,7 @@ OVR_PUBLIC_FUNCTION(double) ovr_WaitTillTime(double absTime)
             #endif
         }
 
-        newTime = ovr_GetTimeInSeconds1_3();
+        newTime = rev_GetTimeInSeconds();
     }
 
     return (newTime - initialTime);

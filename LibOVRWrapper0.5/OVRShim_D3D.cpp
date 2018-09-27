@@ -14,53 +14,53 @@
 
 #include "shimhelper.h"
 
-ovrTextureFormat1_3 getOVRFormat(DXGI_FORMAT format) {
+revTextureFormat getOVRFormat(DXGI_FORMAT format) {
 	switch (format) {
 		case DXGI_FORMAT_B5G6R5_UNORM:
-			return OVR_FORMAT_B5G6R5_UNORM;
+			return REV_FORMAT_B5G6R5_UNORM;
 		case DXGI_FORMAT_B5G5R5A1_UNORM:
-			return OVR_FORMAT_B5G5R5A1_UNORM;
+			return REV_FORMAT_B5G5R5A1_UNORM;
 		case DXGI_FORMAT_B4G4R4A4_UNORM:
-			return OVR_FORMAT_B4G4R4A4_UNORM;
+			return REV_FORMAT_B4G4R4A4_UNORM;
 		case DXGI_FORMAT_R8G8B8A8_UNORM:
-			return OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+			return REV_FORMAT_R8G8B8A8_UNORM_SRGB;
 		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
-			return OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+			return REV_FORMAT_R8G8B8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8A8_UNORM:
-			return OVR_FORMAT_B8G8R8A8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
-			return OVR_FORMAT_B8G8R8A8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8X8_UNORM:
-			return OVR_FORMAT_B8G8R8X8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8X8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
-			return OVR_FORMAT_B8G8R8X8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8X8_UNORM_SRGB;
 		case DXGI_FORMAT_R16G16B16A16_FLOAT:
-			return OVR_FORMAT_R16G16B16A16_FLOAT;
+			return REV_FORMAT_R16G16B16A16_FLOAT;
 		case DXGI_FORMAT_D16_UNORM:
-			return OVR_FORMAT_D16_UNORM;
+			return REV_FORMAT_D16_UNORM;
 		case DXGI_FORMAT_D24_UNORM_S8_UINT:
-			return OVR_FORMAT_D24_UNORM_S8_UINT;
+			return REV_FORMAT_D24_UNORM_S8_UINT;
 		case DXGI_FORMAT_D32_FLOAT:
-			return OVR_FORMAT_D32_FLOAT;
+			return REV_FORMAT_D32_FLOAT;
 		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
-			return OVR_FORMAT_D32_FLOAT_S8X24_UINT;
+			return REV_FORMAT_D32_FLOAT_S8X24_UINT;
 		case DXGI_FORMAT_R32_TYPELESS:
-			return OVR_FORMAT_D32_FLOAT;
+			return REV_FORMAT_D32_FLOAT;
 		case DXGI_FORMAT_R24G8_TYPELESS:
-			return OVR_FORMAT_D24_UNORM_S8_UINT;
+			return REV_FORMAT_D24_UNORM_S8_UINT;
 		case DXGI_FORMAT_R16_TYPELESS:
-			return OVR_FORMAT_D16_UNORM;
+			return REV_FORMAT_D16_UNORM;
 		case DXGI_FORMAT_R32G8X24_TYPELESS:
-			return OVR_FORMAT_D32_FLOAT_S8X24_UINT;
+			return REV_FORMAT_D32_FLOAT_S8X24_UINT;
 		case DXGI_FORMAT_R8G8B8A8_TYPELESS:
-			return OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+			return REV_FORMAT_R8G8B8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8A8_TYPELESS:
-			return OVR_FORMAT_B8G8R8A8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8A8_UNORM_SRGB;
 		case DXGI_FORMAT_B8G8R8X8_TYPELESS:
-			return OVR_FORMAT_B8G8R8X8_UNORM_SRGB;
+			return REV_FORMAT_B8G8R8X8_UNORM_SRGB;
 	}
 	
-	return OVR_FORMAT_UNKNOWN;		
+	return REV_FORMAT_UNKNOWN;
 }
 
 inline DXGI_FORMAT getShaderResourceFormat(DXGI_FORMAT format)
@@ -86,8 +86,8 @@ inline DXGI_FORMAT getShaderResourceFormat(DXGI_FORMAT format)
 // needed for D3D11 rendering.
 struct OculusTexture
 {
-	ovrSession1_3            Session;
-	ovrTextureSwapChain1_3   TextureChain;
+	revSession            Session;
+	revTextureSwapChain   TextureChain;
 	ovrSizei                  size;	
 	std::vector<ID3D11Texture2D*> Tex2D;
 
@@ -97,7 +97,7 @@ struct OculusTexture
 	{
 	}
 
-	bool Init(ovrSession1_3 session, ID3D11Device *device, ovrD3D11Texture texture)
+	bool Init(revSession session, ID3D11Device *device, ovrD3D11Texture texture)
 	{
 		Session = session;
 		size.w = texture.D3D11.Header.TextureSize.w;
@@ -106,8 +106,8 @@ struct OculusTexture
 		D3D11_TEXTURE2D_DESC orgdesc;
 		texture.D3D11.pTexture->GetDesc(&orgdesc);
 
-		ovrTextureSwapChainDesc1_3 desc = {};
-		desc.Type = ovrTexture_2D;
+		revTextureSwapChainDesc desc = {};
+		desc.Type = revTexture_2D;
 		desc.ArraySize = 1;
 		desc.Format = getOVRFormat(orgdesc.Format);
 		desc.Width = texture.D3D11.Header.TextureSize.w;
@@ -118,25 +118,25 @@ struct OculusTexture
 		desc.StaticImage = ovrFalse;
 
 		switch (desc.Format) {
-		case OVR_FORMAT_R8G8B8A8_UNORM_SRGB:		
-		case OVR_FORMAT_B8G8R8A8_UNORM_SRGB:			
-		case OVR_FORMAT_B8G8R8X8_UNORM_SRGB:
-			desc.MiscFlags |= ovrTextureMisc_DX_Typeless;
+		case REV_FORMAT_R8G8B8A8_UNORM_SRGB:
+		case REV_FORMAT_B8G8R8A8_UNORM_SRGB:
+		case REV_FORMAT_B8G8R8X8_UNORM_SRGB:
+			desc.MiscFlags |= revTextureMisc_DX_Typeless;
 			break;
 		}
 
-		ovrResult result = ovr_CreateTextureSwapChainDX1_3(session, device, &desc, &TextureChain);
-		if (!OVR_SUCCESS(result))
+		revResult result = rev_CreateTextureSwapChainDX(session, device, &desc, &TextureChain);
+		if (!REV_SUCCESS(result))
 			return false;
 
 		int textureCount = 0;
-		ovr_GetTextureSwapChainLength1_3(Session, TextureChain, &textureCount);
+		rev_GetTextureSwapChainLength(Session, TextureChain, &textureCount);
 		for (int i = 0; i < textureCount; ++i)
 		{
 			ID3D11Texture2D* tex = nullptr;
-			ovrResult r = ovr_GetTextureSwapChainBufferDX1_3(Session, TextureChain, i, IID_PPV_ARGS(&tex));
+			revResult r = rev_GetTextureSwapChainBufferDX(Session, TextureChain, i, IID_PPV_ARGS(&tex));
 			if (r < 0) {
-				BOOST_LOG_TRIVIAL(error) << "Init ovr_GetTextureSwapChainBufferDX1_3 error " << r;
+				BOOST_LOG_TRIVIAL(error) << "Init rev_GetTextureSwapChainBufferDX error " << r;
 			}
 			Tex2D.push_back(tex);
 		}
@@ -151,16 +151,16 @@ struct OculusTexture
 		}
 		if (TextureChain)
 		{
-			ovr_DestroyTextureSwapChain1_3(Session, TextureChain);
+			rev_DestroyTextureSwapChain(Session, TextureChain);
 		}
 	}
 
 	ID3D11Texture2D* GetTex()
 	{
 		int index = 0;		
-		ovrResult r = ovr_GetTextureSwapChainCurrentIndex1_3(Session, TextureChain, &index);
+		revResult r = rev_GetTextureSwapChainCurrentIndex(Session, TextureChain, &index);
 		if (r < 0) {
-			BOOST_LOG_TRIVIAL(error) << "GetTex ovr_GetTextureSwapChainCurrentIndex1_3 error " << r;
+			BOOST_LOG_TRIVIAL(error) << "GetTex rev_GetTextureSwapChainCurrentIndex error " << r;
 		}
 		return this->Tex2D[index];
 	}
@@ -168,9 +168,9 @@ struct OculusTexture
 	// Commit changes
 	void Commit()
 	{
-		ovrResult r = ovr_CommitTextureSwapChain1_3(Session, TextureChain);
+		revResult r = rev_CommitTextureSwapChain(Session, TextureChain);
 		if (r < 0) {
-			BOOST_LOG_TRIVIAL(error) << "Commit ovr_CommitTextureSwapChain1_3 error " << r;
+			BOOST_LOG_TRIVIAL(error) << "Commit rev_CommitTextureSwapChain error " << r;
 		}
 	}
 };
@@ -183,7 +183,7 @@ OculusTexture  * pEyeRenderTexture[2] = { nullptr, nullptr };
 
 // This gives us the D3D device, the mirror window's backbuffer render target, ovrDistortionCap_FlipInput, ovrDistortionCap_SRGB, ovrDistortionCap_HqDistortion,
 // and the desired FOV. But it doesn't officially give us the render texture size that we need for creating the textures.
-ovrBool ConfigureD3D11(ovrSession1_3 session, const ovrRenderAPIConfig* apiConfig, unsigned int distortionCaps,
+ovrBool ConfigureD3D11(revSession session, const ovrRenderAPIConfig* apiConfig, unsigned int distortionCaps,
 	const ovrFovPort eyeFovIn[2], ovrEyeRenderDesc eyeRenderDescOut[2])
 {
 	cfg = *(ovrD3D11Config *)apiConfig;
@@ -198,7 +198,7 @@ ovrBool ConfigureD3D11(ovrSession1_3 session, const ovrRenderAPIConfig* apiConfi
 extern unsigned int globalFrameIndex;
 extern double globalTrackingStateTime;
 
-void RecreateEyeRenderTexture(ovrSession1_3 session, int eye, ovrD3D11Texture texture) {
+void RecreateEyeRenderTexture(revSession session, int eye, ovrD3D11Texture texture) {
 	bool dirty = false;
 	if (!pEyeRenderTexture[eye]) {
 		dirty = true;
@@ -217,7 +217,7 @@ void RecreateEyeRenderTexture(ovrSession1_3 session, int eye, ovrD3D11Texture te
 	}
 }
 
-void PresentD3D11(ovrSession1_3 session, const ovrPosef renderPose[2], const ovrTexture eyeTexture[2])
+void PresentD3D11(revSession session, const ovrPosef renderPose[2], const ovrTexture eyeTexture[2])
 {
 	ovrD3D11Texture* tex;
 	tex = (ovrD3D11Texture*)eyeTexture;
@@ -231,26 +231,26 @@ void PresentD3D11(ovrSession1_3 session, const ovrPosef renderPose[2], const ovr
 	}
 
 	// Initialize our single full screen Fov layer.
-	ovrLayerHeader1_3* layers[1];
-	ovrLayerEyeFov1_3 ld = {};
-	ld.Header.Type = ovrLayerType1_3_EyeFov;
+	revLayerHeader* layers[1];
+	revLayerEyeFov ld = {};
+	ld.Header.Type = revLayerType_EyeFov;
 	ld.Header.Flags = 0;
 
 	for (int eye = 0; eye < 2; ++eye)
 	{
 		ld.ColorTexture[eye] = pEyeRenderTexture[eye]->TextureChain;
-		ld.Viewport[eye] = tex[eye].D3D11.Header.RenderViewport;
+		ld.Viewport[eye] = *(revRecti*)&tex[eye].D3D11.Header.RenderViewport;
 		ld.Fov[eye].DownTan = eyeRenderFov[eye].DownTan;
 		ld.Fov[eye].LeftTan = eyeRenderFov[eye].LeftTan;
 		ld.Fov[eye].RightTan = eyeRenderFov[eye].RightTan;
 		ld.Fov[eye].UpTan = eyeRenderFov[eye].UpTan;
-		ld.RenderPose[eye].Orientation = renderPose[eye].Orientation;
-		ld.RenderPose[eye].Position = renderPose[eye].Position;
+		ld.RenderPose[eye].Orientation = *(revQuatf*)&renderPose[eye].Orientation;
+		ld.RenderPose[eye].Position = *(revVector3f*)&renderPose[eye].Position;
 		ld.SensorSampleTime = globalTrackingStateTime;
 	}
 
 	layers[0] = &ld.Header;
-	ovr_SubmitFrame1_3(session, globalFrameIndex, NULL, layers, 1);
+	rev_SubmitFrame(session, globalFrameIndex, NULL, layers, 1);
 }
 
 void ShutdownD3D11() {

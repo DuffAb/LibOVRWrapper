@@ -8,5 +8,5 @@
 
 #include "../LibOVR0.7/Include/OVR_CAPI_0_7_0.h"
 
-void copyPose(ovrPosef* dest, const ovrPosef1_3* source);
-void copyPoseState(ovrPoseStatef* dest, const ovrPoseStatef1_3* source);
+void copyPose(ovrPosef* dest, const revPosef* source);
+void copyPoseState(ovrPoseStatef* dest, const revPoseStatef* source);
