@@ -566,7 +566,7 @@ bool DirectX11::InitWindowAndDevice(HINSTANCE hinst, OVR::Recti vp, bool windowe
     WNDCLASSW wc; memset(&wc, 0, sizeof(wc));
     wc.lpszClassName = L"OVRAppWindow";
     wc.style = CS_OWNDC;
-    wc.lpfnWndProc = DefWindowProc;
+    wc.lpfnWndProc = DefWindowProcW;
     wc.cbWndExtra = NULL;
     RegisterClassW(&wc);
 

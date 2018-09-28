@@ -86,8 +86,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>$(ProjectDir)..\..\..\Obj\Windows\$(Platform)\$(Configuration)\VS2013\</IntDir>
-    <OutDir>$(ProjectDir)..\..\..\Bin\Windows\$(Platform)\$(Configuration)\VS2013\</OutDir>
+    <IntDir>$(SolutionDir)$(Configuration)</IntDir>
+    <OutDir>$(SolutionDir)$(Configuration)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -258,7 +258,7 @@
     </Manifest>
     <Link>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
-      <AdditionalDependencies>$(SolutionDir)LibOVRKernel0.5/Lib/Windows/$(Platform)/$(Configuration)/VS2013/LibOVRKernel.lib;$(SolutionDir)LibOVR0.5/Lib/Windows/$(Platform)/$(Configuration)/VS2013/LibOVR.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SolutionDir)$(Configuration)\Lib_x64\LibOVRKernel0.5.lib;$(SolutionDir)$(Configuration)\Lib_x64\LibOVR0.5.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

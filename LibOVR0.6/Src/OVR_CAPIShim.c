@@ -456,6 +456,21 @@ static ModuleHandleType OVR_OpenLibrary(const FilePathCharType* libraryPath)
     #endif
 }
 
+static int OVR_DirExists(FilePathCharType* dir, FilePathCharType* subdir)
+{
+	FilePathCharType dirTmp[OVR_MAX_PATH];
+	swprintf(dirTmp, OVR_MAX_PATH, L"%ls\\%ls", dir, subdir);
+	DWORD ftyp = GetFileAttributes(dirTmp);
+	if (ftyp != INVALID_FILE_ATTRIBUTES)
+	{
+		if (ftyp & FILE_ATTRIBUTE_DIRECTORY)
+		{
+			return 1;
+		}
+	}
+	
+	return 0;    // this is not a directory!
+}
 
 /*  Currently not in use, but expected to be used in the future
 static void OVR_CloseLibrary(ModuleHandleType hLibrary)
@@ -485,8 +500,10 @@ static ModuleHandleType OVR_FindLibraryPath(int requestedProductVersion, int req
     #if defined(_MSC_VER)
         #if defined(_WIN64)
             const char* pBitDepth = "64";
+			const FilePathCharType * pXgvrSubDir = L"Dll_x64\\";
         #else
             const char* pBitDepth = "32";
+			const FilePathCharType * pXgvrSubDir = L"Dll_x86\\";
         #endif
     #elif defined(__APPLE__)
 		// For Apple platforms we are using a Universal Binary LibOVRRT dylib which has both 32 and 64 in it.
@@ -644,7 +661,10 @@ static ModuleHandleType OVR_FindLibraryPath(int requestedProductVersion, int req
             directoryArray[4] = L"";            // No directory, which causes Windows to use the standard search strategy to find the DLL.
 
             OVR_GetCurrentModuleDirectory(moduleDir, sizeof(moduleDir)/sizeof(moduleDir[0]), ovrTrue);
-
+			if (OVR_DirExists(moduleDir, pXgvrSubDir))
+			{
+				swprintf(moduleDir, OVR_MAX_PATH, L"%ls\\%ls", moduleDir, pXgvrSubDir);
+			}
         #elif defined(__APPLE__)
             // https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/dyld.1.html
 
@@ -711,8 +731,16 @@ static ModuleHandleType OVR_FindLibraryPath(int requestedProductVersion, int req
         #endif
 
         OVR_GetCurrentWorkingDirectory(cwDir, sizeof(cwDir) / sizeof(cwDir[0]));
-        OVR_GetCurrentApplicationDirectory(appDir, sizeof(appDir) / sizeof(appDir[0]), ovrTrue, NULL);
+		if (OVR_DirExists(cwDir, pXgvrSubDir))
+		{
+			swprintf(cwDir, OVR_MAX_PATH, L"%ls\\%ls", cwDir, pXgvrSubDir);
+		}
 
+        OVR_GetCurrentApplicationDirectory(appDir, sizeof(appDir) / sizeof(appDir[0]), ovrTrue, NULL);
+		if (OVR_DirExists(appDir, pXgvrSubDir))
+		{
+			swprintf(appDir, OVR_MAX_PATH, L"%ls\\%ls", appDir, pXgvrSubDir);
+		}
         // Versioned file expectations.
         //     Windows: LibOVRRT<BIT_DEPTH>_<PRODUCT_VERSION>_<MAJOR_VERSION>.dll                                  // Example: LibOVRRT64_1_1.dll -- LibOVRRT 64 bit, product 1, major version 1, minor/patch/build numbers unspecified in the name.
         //     Mac:     LibOVRRT_<PRODUCT_VERSION>.framework/Versions/<MAJOR_VERSION>/LibOVRRT_<PRODUCT_VERSION>   // We are not presently using the .framework bundle's Current directory to hold the version number. This may change.

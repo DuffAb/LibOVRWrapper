@@ -37,6 +37,10 @@ using namespace OVR;
 //----------------------------------------------------------------------------
 int WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int)
 {
+#if _DEBUG
+	SetDllDirectory("D:\\MyWork\\From-liangdefeng\\LibOVR\\LibOVRWrapper\\Debug\\Dll_x64\\");
+#endif
+
     OVR::System::Init(OVR::Log::ConfigureDefaultLog(OVR::LogMask_All));
 
 	//Initialise rift
@@ -167,7 +171,9 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int)
 			eyeTex[i].D3D11.pSRView               = eyeRenderTexture[i]->TexSv;
         }
 #endif
+		
 		ovrHmd_EndFrame(HMD, EyeRenderPose, &eyeTex[0].Texture);
+		//Platform.SwapChain->Present(0, 0);
 	}
 
 	//Release

@@ -222,7 +222,7 @@ static LPCSTR fixname(LPCSTR name) {
 
 #if !defined(REV_DLSYM)
     #if defined(_WIN32)
-        #define REV_DLSYM(dlImage, name) GetProcAddress(dlImage, fixname(name))
+        #define REV_DLSYM(dlImage, name) GetProcAddress(dlImage, name)
     #else
         #define REV_DLSYM(dlImage, name) dlsym(dlImage, name)
     #endif
@@ -665,10 +665,14 @@ static HANDLE REV_Win32_SignCheck(FilePathCharType* fullPath)
 static ModuleHandleType REV_OpenLibrary(const FilePathCharType* libraryPath)
 {
     #if defined(_WIN32)
+		return LoadLibraryW(libraryPath);
+#if 0
         DWORD fullPathNameLen = 0;
         FilePathCharType fullPath[MAX_PATH] = { 0 };
         HANDLE hFilePinned = INVALID_HANDLE_VALUE;
         ModuleHandleType hModule = 0;
+		swprintf(fullPath, MAX_PATH, L"%ls", libraryPath);
+
         fullPathNameLen = GetFullPathNameW(libraryPath, MAX_PATH, fullPath, 0);
         if (fullPathNameLen <= 0 || fullPathNameLen >= MAX_PATH)
         {
@@ -690,6 +694,7 @@ static ModuleHandleType REV_OpenLibrary(const FilePathCharType* libraryPath)
         }
 
         return hModule;
+#endif
     #else
         // Don't bother trying to dlopen() a file that is not even there.
         if (access(libraryPath, X_OK | R_OK ) != 0)
@@ -903,10 +908,12 @@ static ModuleHandleType REV_FindLibraryPath(int requestedProductVersion, int req
 
         #if defined(_WIN32)
             // On Windows, only search the developer directory and the usual path
-            const FilePathCharType* directoryArray[2];
+			FilePathCharType  moduleDir[REV_MAX_PATH];
+            const FilePathCharType* directoryArray[3];
             directoryArray[0] = developerDir; // Developer directory.
-            directoryArray[1] = L""; // No directory, which causes Windows to use the standard search strategy to find the DLL.
-
+            directoryArray[1] = moduleDir; // No directory, which causes Windows to use the standard search strategy to find the DLL.
+			REV_GetCurrentModuleDirectory(moduleDir, sizeof(moduleDir) / sizeof(moduleDir[0]), revTrue);
+			directoryArray[2] = L"";
         #elif defined(__APPLE__)
             // https://developer.apple.com/library/mac/documentation/Darwin/Reference/ManPages/man1/dyld.1.html
 
@@ -1002,9 +1009,10 @@ static ModuleHandleType REV_FindLibraryPath(int requestedProductVersion, int req
         for(i = 0; i < sizeof(directoryArray)/sizeof(directoryArray[0]); ++i)
         {
             #if defined(_WIN32)
-                printfResult = swprintf(libraryPath, libraryPathCapacity, L"%lsLibOVRRT%hs_%d.dll", directoryArray[i], pBitDepth, requestedMajorVersion);
+                //printfResult = swprintf(libraryPath, libraryPathCapacity, L"%lsLibOVRRevive_%d.dll", directoryArray[i], requestedMajorVersion);
+				printfResult = swprintf(libraryPath, libraryPathCapacity, L"%lsLibOVRRevive_1.dll", directoryArray[i]);
 
-                if (*directoryArray[i] == 0)
+                /*if (*directoryArray[i] == 0)
                 {
                     int k;
                     FilePathCharType foundPath[MAX_PATH] = { 0 };
@@ -1018,7 +1026,7 @@ static ModuleHandleType REV_FindLibraryPath(int requestedProductVersion, int req
                     {
                         libraryPath[k] = foundPath[k];
                     }
-                }
+                }*/
 
             #elif defined(__APPLE__)
                 // https://developer.apple.com/library/mac/documentation/MacOSX/Conceptual/BPFrameworks/Concepts/VersionInformation.html

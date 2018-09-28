@@ -224,7 +224,7 @@
     <OutDir>$(ProjectDir)../../../Lib/Windows/$(Platform)/$(Configuration)/VS2013/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)../../../Lib/Windows/$(Platform)/$(Configuration)/VS2013/</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\Lib_x64</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugStatic|x64'">
     <OutDir>$(ProjectDir)../../../Lib/Windows/$(Platform)/$(Configuration)/VS2013/</OutDir>
@@ -236,7 +236,7 @@
     <IntDir>$(ProjectDir)../../../Obj/$(ProjectName)/Windows/$(Platform)/$(Configuration)/VS2013/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IntDir>$(ProjectDir)../../../Obj/$(ProjectName)/Windows/$(Platform)/$(Configuration)/VS2013/</IntDir>
+    <IntDir>$(SolutionDir)$(Configuration)\Lib_x64</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugStatic|x64'">
     <IntDir>$(ProjectDir)../../../Obj/$(ProjectName)/Windows/$(Platform)/$(Configuration)/VS2013/</IntDir>
@@ -248,7 +248,7 @@
     <TargetName>LibOVRKernel</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>LibOVRKernel</TargetName>
+    <TargetName>$(ProjectName)</TargetName>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>

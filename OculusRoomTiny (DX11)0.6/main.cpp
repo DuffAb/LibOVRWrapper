@@ -76,6 +76,9 @@ struct OculusTexture
 //-------------------------------------------------------------------------------------
 int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPSTR, int)
 {
+#if _DEBUG
+	SetDllDirectory("D:\\MyWork\\From-liangdefeng\\LibOVR\\LibOVRWrapper\\Debug\\Dll_x64\\");
+#endif
     // Initializes LibOVR, and the Rift
     ovrResult result = ovr_Initialize(nullptr);
     VALIDATE(OVR_SUCCESS(result), "Failed to initialize libOVR.");

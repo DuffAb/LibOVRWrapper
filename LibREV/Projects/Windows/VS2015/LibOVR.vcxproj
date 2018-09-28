@@ -152,7 +152,7 @@
     <OutDir>$(ProjectDir)../../../Lib/Windows/$(Platform)/Debug/VS2015/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(ProjectDir)../../../Lib/Windows/$(Platform)/$(Configuration)/VS2015/</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\Lib_x64</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugSingleProcess|x64'">
     <OutDir>$(ProjectDir)../../../Lib/Windows/$(Platform)/Debug/VS2015/</OutDir>
@@ -164,7 +164,7 @@
     <IntDir>$(ProjectDir)../../../Obj/$(ProjectName)/Windows/$(Platform)/$(Configuration)/VS2015/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IntDir>$(ProjectDir)../../../Obj/$(ProjectName)/Windows/$(Platform)/$(Configuration)/VS2015/</IntDir>
+    <IntDir>$(SolutionDir)$(Configuration)\Lib_x64</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugSingleProcess|x64'">
     <IntDir>$(ProjectDir)../../../Obj/$(ProjectName)/Windows/$(Platform)/$(Configuration)/VS2015/</IntDir>
