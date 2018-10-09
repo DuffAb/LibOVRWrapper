@@ -92,8 +92,19 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int)
 							   ovrDistortionCap_Overdrive, HMD->DefaultEyeFov, EyeRenderDesc );
 
     ovrHmd_SetEnabledCaps(HMD, ovrHmdCap_LowPersistence|ovrHmdCap_DynamicPrediction);
-	ovrHmd_AttachToWindow(HMD, Platform.Window, NULL, NULL);
-
+	ovrRecti rect;
+	rect.Pos.x = 0;
+	rect.Pos.y = 0;
+	RECT wrect;
+	GetWindowRect(Platform.Window, &wrect);
+	rect.Size.w = wrect.right - wrect.left;
+	rect.Size.h = wrect.bottom - wrect.top;
+	ovrHmd_AttachToWindow(HMD, Platform.Window, &rect, NULL);
+#if 0 // ldf
+	ovrTexture*          mirrorTexture = nullptr;
+	ovrHmd_GetMirrorTexture(HMD, &mirrorTexture);
+#endif
+	
 	// Start the sensor
     ovrHmd_ConfigureTracking(HMD, ovrTrackingCap_Orientation|ovrTrackingCap_MagYawCorrection|
 		                          ovrTrackingCap_Position, 0);
@@ -123,8 +134,7 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int)
 		Pos2.y = ovrHmd_GetFloat(HMD, OVR_KEY_EYE_HEIGHT, Pos2.y);
 
 		// Animate the cube
-		roomScene.Models[0]->Pos = Vector3f(9*sinf((float)ovr_GetTimeInSeconds()),3,
-			                                9*cosf((float)ovr_GetTimeInSeconds()));
+		roomScene.Models[0]->Pos = Vector3f(9*sinf((float)ovr_GetTimeInSeconds()), 3, 9*cosf((float)ovr_GetTimeInSeconds()));
 
 		//Get eye poses, feeding in correct IPD offset
 		ovrVector3f ViewOffset[2] = {EyeRenderDesc[0].HmdToEyeViewOffset,EyeRenderDesc[1].HmdToEyeViewOffset};
@@ -174,6 +184,11 @@ int WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int)
 		
 		ovrHmd_EndFrame(HMD, EyeRenderPose, &eyeTex[0].Texture);
 		//Platform.SwapChain->Present(0, 0);
+#if 1 //ldf
+		//ovrD3D11Texture* tex2 = (ovrD3D11Texture*)mirrorTexture;
+		//Platform.Context->CopyResource(Platform.BackBuffer, tex2->D3D11.pTexture);
+		Platform.SwapChain->Present(0, 0);
+#endif
 	}
 
 	//Release

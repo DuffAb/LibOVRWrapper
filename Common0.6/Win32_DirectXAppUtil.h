@@ -140,9 +140,17 @@ struct DirectX11
         const DWORD wsStyle = WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME;
         RECT winSize = { 0, 0, vp.w, vp.h };
         AdjustWindowRect(&winSize, wsStyle, FALSE);
-        Window = CreateWindowW(L"OVRAppWindow", (title ? title : L"OculusRoomTiny (DX11)"), wsStyle | WS_VISIBLE,
-            CW_USEDEFAULT, CW_USEDEFAULT, winSize.right - winSize.left, winSize.bottom - winSize.top,
-            NULL, NULL, hinst, NULL);
+        Window = CreateWindowW(L"OVRAppWindow", 
+			(title ? title : L"OculusRoomTiny (DX11)"), 
+			wsStyle | WS_VISIBLE,
+            CW_USEDEFAULT, 
+			CW_USEDEFAULT, 
+			winSize.right - winSize.left, 
+			winSize.bottom - winSize.top,
+            NULL, 
+			NULL, 
+			hinst, 
+			NULL);
         if (!Window) return(false);
         SetWindowLongPtr(Window, 0, LONG_PTR(this));
 

@@ -5,9 +5,14 @@
 
 #include "../LibOVR0.5/Include/OVR_CAPI_0_5_0.h"
 #include "../LibOVR0.5/Include/OVR_CAPI_D3D.h"
-
+revMirrorTexture* globalMirror;
 extern "C" HRESULT wrapCreateShaderResourceView(ID3D11Device* device, ID3D11Resource* resource, ID3D11ShaderResourceView** srv) {
 	return device->CreateShaderResourceView(resource, NULL, srv);
+}
+
+extern "C"  void setMirror(revMirrorTexture* mirror)
+{
+	globalMirror = mirror;
 }
 
 extern "C" void initChains() {

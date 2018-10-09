@@ -191,13 +191,21 @@ OVR_PUBLIC_FUNCTION(ovrHmd) ovrHmd_Create(int index) {
 
 	return d;
 }
+#if 0 //ldf
+OVR_PUBLIC_FUNCTION(ovrBool) ovrHmd_GetMirrorTexture(ovrHmd hmd, ovrTexture** outMirrorTexture)
+{
+	GetMirrorTexture(outMirrorTexture);
 
+	return 1;
+}
+#endif
 OVR_PUBLIC_FUNCTION(ovrBool) ovrHmd_AttachToWindow(ovrHmd hmd, void* window,
 	const ovrRecti* destMirrorRect, const ovrRecti* sourceRenderTargetRect)
 {
 	BOOST_LOG_TRIVIAL(trace) << "ovrHmd_AttachToWindow";
 
 	globalMirrorWindowHandle = (HWND)window;
+	//CreateMirrorTextureD3D11((revSession)hmd->Handle, destMirrorRect, sourceRenderTargetRect);
 	//todo: possibly save sourceRenderTargetRect which is the area of the mirror window we should draw to (or NULL for whole mirror window)
 	return ovrTrue;
 }

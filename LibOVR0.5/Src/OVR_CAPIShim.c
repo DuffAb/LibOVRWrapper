@@ -807,6 +807,7 @@ OVR_DECLARE_IMPORT(ovrHmd,           ovrHmd_Create, (int index))
 OVR_DECLARE_IMPORT(void,             ovrHmd_Destroy, (ovrHmd hmd))
 OVR_DECLARE_IMPORT(ovrHmd,           ovrHmd_CreateDebug, (ovrHmdType type))
 OVR_DECLARE_IMPORT(const char*,      ovrHmd_GetLastError, (ovrHmd hmd))
+OVR_DECLARE_IMPORT(ovrBool, ovrHmd_GetMirrorTexture, (ovrHmd hmd, ovrTexture** outMirrorTexture))
 OVR_DECLARE_IMPORT(ovrBool,          ovrHmd_AttachToWindow, (ovrHmd hmd, void* window, const ovrRecti* destMirrorRect, const ovrRecti* sourceRenderTargetRect))
 OVR_DECLARE_IMPORT(unsigned int,     ovrHmd_GetEnabledCaps, (ovrHmd hmd))
 OVR_DECLARE_IMPORT(void,             ovrHmd_SetEnabledCaps, (ovrHmd hmd, unsigned int hmdCaps))
@@ -875,6 +876,7 @@ static ovrBool OVR_LoadSharedLibrary(int requestedMinorVersion, int requestedPat
     OVR_GETFUNCTION(ovrHmd_Destroy)
     OVR_GETFUNCTION(ovrHmd_CreateDebug)
     OVR_GETFUNCTION(ovrHmd_GetLastError)
+	OVR_GETFUNCTION(ovrHmd_GetMirrorTexture)
     OVR_GETFUNCTION(ovrHmd_AttachToWindow)
     OVR_GETFUNCTION(ovrHmd_GetEnabledCaps)
     OVR_GETFUNCTION(ovrHmd_SetEnabledCaps)
@@ -1058,7 +1060,14 @@ OVR_PUBLIC_FUNCTION(const char*) ovrHmd_GetLastError(ovrHmd hmd)
         return "(Unable to load LibOVR)";
     return ovrHmd_GetLastErrorPtr(hmd);
 }
-
+#if 0 //ldf
+OVR_PUBLIC_FUNCTION(ovrBool) ovrHmd_GetMirrorTexture(ovrHmd hmd, ovrTexture** outMirrorTexture)
+{
+	if (!ovrHmd_GetMirrorTexturePtr)
+		return ovrFalse;
+	return ovrHmd_GetMirrorTexturePtr(hmd, outMirrorTexture);
+}
+#endif
 OVR_PUBLIC_FUNCTION(ovrBool) ovrHmd_AttachToWindow(ovrHmd hmd, void* window,
                                 const ovrRecti* destMirrorRect, const ovrRecti* sourceRenderTargetRect)
 {

@@ -126,6 +126,7 @@ int WINAPI WinMain(HINSTANCE hinst, HINSTANCE, LPSTR, int)
     td.Usage            = D3D11_USAGE_DEFAULT;
     td.SampleDesc.Count = 1;
     td.MipLevels        = 1;
+	td.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
     ovrHmd_CreateMirrorTextureD3D11(HMD, DIRECTX.Device, &td, &mirrorTexture);
 
     // Create the room model

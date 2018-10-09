@@ -762,6 +762,10 @@ OVR_PUBLIC_FUNCTION(const char*) ovrHmd_GetLastError(ovrHmd hmd);
 ///            of the render target output that will be mirrored from 'sourceRenderTargetRect'.
 ///            Null pointers mean "full size".
 /// @note Source and dest mirror rects are not yet implemented.
+#if 0
+OVR_PUBLIC_FUNCTION(ovrBool) ovrHmd_GetMirrorTexture(ovrHmd hmd, ovrTexture** outMirrorTexture);
+#endif
+
 OVR_PUBLIC_FUNCTION(ovrBool) ovrHmd_AttachToWindow(ovrHmd hmd, void* window,
                                          const ovrRecti* destMirrorRect,
                                          const ovrRecti* sourceRenderTargetRect);

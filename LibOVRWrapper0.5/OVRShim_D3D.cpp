@@ -175,11 +175,14 @@ struct OculusTexture
 	}
 };
 
-ovrD3D11Config cfg;
-ovrEyeRenderDesc EyeRenderDesc[2];
-unsigned int globalDistortionCaps;
-ovrFovPort eyeRenderFov[2];
-OculusTexture  * pEyeRenderTexture[2] = { nullptr, nullptr };
+ovrD3D11Config			 cfg;
+ovrEyeRenderDesc		 EyeRenderDesc[2];
+unsigned int			 globalDistortionCaps;
+ovrFovPort				 eyeRenderFov[2];
+OculusTexture*           pEyeRenderTexture[2] = { nullptr, nullptr };
+ovrTexture*				 mirrorTexture = nullptr;
+
+ID3D11Texture2D*         BackBuffer;
 
 // This gives us the D3D device, the mirror window's backbuffer render target, ovrDistortionCap_FlipInput, ovrDistortionCap_SRGB, ovrDistortionCap_HqDistortion,
 // and the desired FOV. But it doesn't officially give us the render texture size that we need for creating the textures.
@@ -192,7 +195,81 @@ ovrBool ConfigureD3D11(revSession session, const ovrRenderAPIConfig* apiConfig, 
 		eyeRenderFov[eye] = eyeFovIn[eye];
 		EyeRenderDesc[eye] = eyeRenderDescOut[eye];
 	}
+	cfg.D3D11.pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer);
+	cfg.D3D11.pDevice->CreateRenderTargetView(BackBuffer, NULL, &cfg.D3D11.pBackBufferRT);
+
 	return ovrTrue;
+}
+
+ovrBool CreateMirrorTextureD3D11(revSession session, const ovrRecti* destMirrorRect, const ovrRecti* sourceRenderTargetRect)
+{
+	D3D11_TEXTURE2D_DESC td = {};
+	td.ArraySize = 1;
+	td.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	td.Width = destMirrorRect->Size.w;
+	td.Height = destMirrorRect->Size.h;
+	td.Usage = D3D11_USAGE_DEFAULT;
+	td.SampleDesc.Count = 1;
+	td.MipLevels = 1;
+	td.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+	revMirrorTextureDesc d;
+	d.Format = getOVRFormat(td.Format);
+	d.Width = td.Width;
+	d.Height = td.Height;
+	d.MiscFlags = 0;
+	switch (d.Format) {
+	case REV_FORMAT_R8G8B8A8_UNORM_SRGB:
+	case REV_FORMAT_B8G8R8A8_UNORM_SRGB:
+	case REV_FORMAT_B8G8R8X8_UNORM_SRGB:
+		d.MiscFlags |= revTextureMisc_DX_Typeless;
+		break;
+	}
+	revMirrorTexture* mirror = (revMirrorTexture*)malloc(sizeof(revMirrorTexture));
+	revResult result = rev_CreateMirrorTextureDX(session, (IUnknown*)cfg.D3D11.pDevice, &d, mirror);
+	
+	if (!REV_SUCCESS(result)) {
+		revErrorInfo info;
+		rev_GetLastErrorInfo(&info);
+
+		BOOST_LOG_TRIVIAL(error) << "ovrHmd_CreateMirrorTextureD3D11 could not allocate Mirrortexture:" << info.ErrorString;
+		return result;
+	}
+
+	ovrD3D11Texture* ovrtext = (ovrD3D11Texture*)malloc(sizeof(ovrD3D11Texture));
+
+	ID3D11Texture2D* texture = 0;
+	rev_GetMirrorTextureBufferDX(session, *mirror, IID_ID3D11Texture2D, (void**)&texture);
+
+	ovrtext->D3D11.pTexture = texture;
+
+	if (td.BindFlags & D3D11_BIND_SHADER_RESOURCE) {
+		HRESULT rs;
+
+		D3D11_SHADER_RESOURCE_VIEW_DESC depthSrv;
+		ZeroMemory(&depthSrv, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+		depthSrv.Format = getShaderResourceFormat(td.Format);
+		depthSrv.ViewDimension = td.SampleDesc.Count > 1 ? D3D11_SRV_DIMENSION_TEXTURE2DMS : D3D11_SRV_DIMENSION_TEXTURE2D;
+		depthSrv.Texture2D.MostDetailedMip = 0;
+		depthSrv.Texture2D.MipLevels = td.MipLevels;
+
+		rs = cfg.D3D11.pDevice->CreateShaderResourceView((ID3D11Resource*)ovrtext->D3D11.pTexture, &depthSrv, &(ovrtext->D3D11.pSRView));
+
+		if (rs < 0) {
+			BOOST_LOG_TRIVIAL(error) << "ovrHmd_CreateMirrorTextureD3D11 could not create ShaderResourceView";
+			return 0;
+		}
+	}
+
+	ovrtext->D3D11.Header.API = ovrRenderAPI_D3D11;
+	ovrtext->D3D11.Header.TextureSize.w = d.Width;
+	ovrtext->D3D11.Header.TextureSize.h = d.Height;
+	
+	mirrorTexture = (ovrTexture*)ovrtext;
+
+	setMirror(mirror);
+
+	return 1;
 }
 
 extern unsigned int globalFrameIndex;
@@ -251,6 +328,18 @@ void PresentD3D11(revSession session, const ovrPosef renderPose[2], const ovrTex
 
 	layers[0] = &ld.Header;
 	rev_SubmitFrame(session, globalFrameIndex, NULL, layers, 1);
+
+	// Render mirror
+#if 0
+	ovrD3D11Texture* tex2 = (ovrD3D11Texture*)mirrorTexture;
+	cfg.D3D11.pDeviceContext->CopyResource(BackBuffer, tex2->D3D11.pTexture);
+	cfg.D3D11.pSwapChain->Present(0, 0);
+#endif
+}
+
+void GetMirrorTexture(ovrTexture** mirrorTex)
+{
+	*mirrorTex = mirrorTexture;
 }
 
 void ShutdownD3D11() {

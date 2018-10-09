@@ -246,7 +246,7 @@ OVR_PUBLIC_FUNCTION(ovrResult) ovrHmd_CreateMirrorTextureD3D11(ovrHmd hmd,
 
 	ovrResult result = rev_CreateMirrorTextureDX((revSession)hmd->Handle, (IUnknown*)device, &d, mirror);
 
-	if (!OVR_SUCCESS(result)) {
+	if (!REV_SUCCESS(result)) {
 		revErrorInfo info;
 		rev_GetLastErrorInfo(&info);
 

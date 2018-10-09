@@ -44,6 +44,30 @@ struct DirectX11
     ID3D11RenderTargetView * BackBufferRT;
     struct DataBuffer      * UniformBufferGen;
 
+	static LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT Msg, _In_ WPARAM wParam, _In_ LPARAM lParam)
+	{
+		DirectX11 *p = (DirectX11 *)GetWindowLongPtr(hWnd, 0);
+		switch (Msg)
+		{
+		case WM_KEYDOWN:
+			p->Key[wParam] = true;
+			break;
+		case WM_KEYUP:
+			p->Key[wParam] = false;
+			break;
+		case WM_DESTROY:
+			//p->Running = false;
+			break;
+		default:
+			return DefWindowProcW(hWnd, Msg, wParam, lParam);
+		}
+
+		//if ((p->Key['Q'] && p->Key[VK_CONTROL]) || p->Key[VK_ESCAPE])
+			//p->Running = false;
+
+		return 0;
+	}
+
     bool InitWindowAndDevice(HINSTANCE hinst, OVR::Recti vp, bool windowed, char *);
     void ClearAndSetRenderTarget(ID3D11RenderTargetView * rendertarget, struct DepthBuffer * depthbuffer, OVR::Recti vp);
 
@@ -321,8 +345,13 @@ struct ShaderFill
 		D3DCompile(vertexShader, strlen(vertexShader), NULL, NULL, NULL, "main", "vs_4_0", 0, 0, &blobData, NULL);
 		VShader = new Shader(blobData, 0);
 
-		Platform.Device->CreateInputLayout(VertexDesc, numVertexDesc,
-			blobData->GetBufferPointer(), blobData->GetBufferSize(), &InputLayout);
+		// 指定了输入布局描述之后，我们就可以使用ID3D11Device::CreateInputLayout方法获取一个表示输入布局的ID3D11InputLayout接口的指针
+		// 1．pInputElementDescs：一个用于描述顶点结构体的D3D11_INPUT_ELEMENT_DESC数组。
+		// 2．NumElements：D3D11_INPUT_ELEMENT_DESC数组的元素数量。
+		// 3．pShaderBytecodeWithInputSignature：指向顶点着色器参数的字节码的指针。
+		// 4．BytecodeLength：顶点着色器参数的字节码长度，单位为字节。
+		// 5．ppInputLayout：返回创建后的ID3D11InputLayout指针。
+		Platform.Device->CreateInputLayout(VertexDesc, numVertexDesc, blobData->GetBufferPointer(), blobData->GetBufferSize(), &InputLayout);
 		D3DCompile(pixelShader, strlen(pixelShader), NULL, NULL, NULL, "main", "ps_4_0", 0, 0, &blobData, NULL);
 		PShader = new Shader(blobData, 1);
 
@@ -563,92 +592,186 @@ struct Scene
 
 bool DirectX11::InitWindowAndDevice(HINSTANCE hinst, OVR::Recti vp, bool windowed, char *)
 {
-    WNDCLASSW wc; memset(&wc, 0, sizeof(wc));
-    wc.lpszClassName = L"OVRAppWindow";
-    wc.style = CS_OWNDC;
-    wc.lpfnWndProc = DefWindowProcW;
-    wc.cbWndExtra = NULL;
-    RegisterClassW(&wc);
+ //   WNDCLASSW wc; memset(&wc, 0, sizeof(wc));
+ //   wc.lpszClassName = L"OVRAppWindow";
+ //   wc.style = CS_OWNDC;
+	//wc.lpfnWndProc = WindowProc;// DefWindowProcW;
+ //   wc.cbWndExtra = sizeof(struct DirectX11 *);
+ //   RegisterClassW(&wc);
 
-    DWORD wsStyle = WS_POPUP;
-    DWORD sizeDivisor = 1;
+ //   DWORD wsStyle = WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME;
+ //   DWORD sizeDivisor = 1;
 
-    if (windowed)
-    {
-        wsStyle |= WS_OVERLAPPEDWINDOW; sizeDivisor = 2;
-    }
-    RECT winSize = { 0, 0, (LONG)(vp.w / sizeDivisor), (LONG)(vp.h / sizeDivisor) };
-    AdjustWindowRect(&winSize, wsStyle, false);
-    Window = CreateWindowW(L"OVRAppWindow", L"OculusRoomTiny", wsStyle | WS_VISIBLE,
-        vp.x, vp.y, winSize.right - winSize.left, winSize.bottom - winSize.top,
-        NULL, NULL, hinst, NULL);
+ //   if (windowed)
+ //   {
+ //       wsStyle |= WS_OVERLAPPEDWINDOW; 
+	//	sizeDivisor = 2;
+ //   }
+ //   RECT winSize = { 0, 0, (LONG)(vp.w / sizeDivisor), (LONG)(vp.h / sizeDivisor) };
+ //   AdjustWindowRect(&winSize, wsStyle, false);
+ //   Window = CreateWindowW(L"OVRAppWindow", 
+	//	L"OculusRoomTiny",
+	//	wsStyle | WS_VISIBLE,
+	//	CW_USEDEFAULT,
+	//	CW_USEDEFAULT,
+	//	winSize.right - winSize.left, 
+	//	winSize.bottom - winSize.top,
+ //       NULL, 
+	//	NULL, 
+	//	hinst, 
+	//	NULL);
 
-    if (!Window)
-        return(false);
-    if (windowed)
-        WinSize = vp.GetSize();
-    else
-    {
-        RECT rc; GetClientRect(Window, &rc);
-        WinSize = Sizei(rc.right - rc.left, rc.bottom - rc.top);
-    }
+ //   if (!Window) return(false);
+	//SetWindowLongPtr(Window, 0, LONG_PTR(this));
 
-    IDXGIFactory * DXGIFactory;
-    IDXGIAdapter * Adapter;
-    if (FAILED(CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)(&DXGIFactory))))
-        return(false);
-    if (FAILED(DXGIFactory->EnumAdapters(0, &Adapter)))
-        return(false);
-    if (FAILED(D3D11CreateDevice(Adapter, Adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE,
-        NULL, 0, NULL, 0, D3D11_SDK_VERSION, &Device, NULL, &Context)))
-        return(false);
+ //   if (windowed)
+ //       WinSize = vp.GetSize();
+ //   else
+ //   {
+ //       RECT rc; GetClientRect(Window, &rc);
+ //       WinSize = Sizei(rc.right - rc.left, rc.bottom - rc.top);
+ //   }
 
-    DXGI_SWAP_CHAIN_DESC scDesc;
-    memset(&scDesc, 0, sizeof(scDesc));
-    scDesc.BufferCount = 2;
-    scDesc.BufferDesc.Width = WinSize.w;
-    scDesc.BufferDesc.Height = WinSize.h;
-    scDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    scDesc.BufferDesc.RefreshRate.Numerator = 0;
-    scDesc.BufferDesc.RefreshRate.Denominator = 1;
-    scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    scDesc.OutputWindow = Window;
-    scDesc.SampleDesc.Count = 1;
-    scDesc.SampleDesc.Quality = 0;
-    scDesc.Windowed = windowed;
-    scDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-    scDesc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
+ //   IDXGIFactory * DXGIFactory;
+ //   IDXGIAdapter * Adapter;
+ //   if (FAILED(CreateDXGIFactory1(__uuidof(IDXGIFactory), (void**)(&DXGIFactory))))
+ //       return(false);
+ //   if (FAILED(DXGIFactory->EnumAdapters(0, &Adapter)))
+ //       return(false);
+ //   if (FAILED(D3D11CreateDevice(Adapter, Adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE,
+ //       NULL, 0, NULL, 0, D3D11_SDK_VERSION, &Device, NULL, &Context)))
+ //       return(false);
 
-    if (FAILED(DXGIFactory->CreateSwapChain(Device, &scDesc, &SwapChain)))               return(false);
-    if (FAILED(SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer))) return(false);
-    if (FAILED(Device->CreateRenderTargetView(BackBuffer, NULL, &BackBufferRT)))         return(false);
+ //   DXGI_SWAP_CHAIN_DESC scDesc;
+ //   memset(&scDesc, 0, sizeof(scDesc));
+ //   scDesc.BufferCount = 2;
+ //   scDesc.BufferDesc.Width = WinSize.w;
+ //   scDesc.BufferDesc.Height = WinSize.h;
+ //   scDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+ //   scDesc.BufferDesc.RefreshRate.Numerator = 0;
+ //   scDesc.BufferDesc.RefreshRate.Denominator = 1;
+ //   scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+ //   scDesc.OutputWindow = Window;
+ //   scDesc.SampleDesc.Count = 1;
+ //   scDesc.SampleDesc.Quality = 0;
+ //   scDesc.Windowed = windowed;
+ //   scDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+ //   scDesc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
 
-    MainDepthBuffer = new DepthBuffer(Sizei(WinSize.w, WinSize.h), 1);
-    Context->OMSetRenderTargets(1, &BackBufferRT, MainDepthBuffer->TexDsv);
-    if (!windowed) SwapChain->SetFullscreenState(1, NULL);
-    UniformBufferGen = new DataBuffer(D3D11_BIND_CONSTANT_BUFFER, NULL, 2000);// make sure big enough
+ //   if (FAILED(DXGIFactory->CreateSwapChain(Device, &scDesc, &SwapChain)))               return(false);
+ //   if (FAILED(SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer))) return(false);
+ //   if (FAILED(Device->CreateRenderTargetView(BackBuffer, NULL, &BackBufferRT)))         return(false);
 
-    D3D11_RASTERIZER_DESC rs;
-    memset(&rs, 0, sizeof(rs));
-    rs.AntialiasedLineEnable = rs.DepthClipEnable = true;
-    rs.CullMode = D3D11_CULL_BACK;
-    rs.FillMode = D3D11_FILL_SOLID;
-    ID3D11RasterizerState *  Rasterizer = NULL;
-    Device->CreateRasterizerState(&rs, &Rasterizer);
-    Context->RSSetState(Rasterizer);
+ //   MainDepthBuffer = new DepthBuffer(Sizei(WinSize.w, WinSize.h), 1);
+ //   Context->OMSetRenderTargets(1, &BackBufferRT, MainDepthBuffer->TexDsv);
+ //   if (!windowed) SwapChain->SetFullscreenState(1, NULL);
+ //   UniformBufferGen = new DataBuffer(D3D11_BIND_CONSTANT_BUFFER, NULL, 2000);// make sure big enough
 
-    D3D11_DEPTH_STENCIL_DESC dss;
-    memset(&dss, 0, sizeof(dss));
-    dss.DepthEnable = true;
-    dss.DepthFunc = D3D11_COMPARISON_LESS;
-    dss.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-    ID3D11DepthStencilState * DepthState;
-    Device->CreateDepthStencilState(&dss, &DepthState);
-    Context->OMSetDepthStencilState(DepthState, 0);
+ //   D3D11_RASTERIZER_DESC rs;
+ //   memset(&rs, 0, sizeof(rs));
+ //   rs.AntialiasedLineEnable = rs.DepthClipEnable = true;
+ //   rs.CullMode = D3D11_CULL_BACK; //当指定为D3D11_CULL_BACK时，表示消隐朝后的三角形，这是默认值
+ //   rs.FillMode = D3D11_FILL_SOLID;//当指定为D3D11_FILL_SOLID时，表示以实心模式渲染几何体，这是默认值
+ //   ID3D11RasterizerState *  Rasterizer = NULL;
 
-    SetCapture(Window);
-    ShowCursor(FALSE);
-    return(true);
+	//// 第1个参数是一个指向D3D11_RASTERIZER_DESC结构体的指针，该结构体用于描述所要创建的光栅化状态块；第二个参数用于返回创建后的ID3D11RasterizerState对象
+ //   Device->CreateRasterizerState(&rs, &Rasterizer);
+ //   
+	//// 在创建ID3D11RasterizerState对象之后，我们可以使用个新的状态块来更新设备
+	//Context->RSSetState(Rasterizer);
+
+ //   D3D11_DEPTH_STENCIL_DESC dss;
+ //   memset(&dss, 0, sizeof(dss));
+ //   dss.DepthEnable = true;
+ //   dss.DepthFunc = D3D11_COMPARISON_LESS;
+ //   dss.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+ //   ID3D11DepthStencilState * DepthState;
+ //   Device->CreateDepthStencilState(&dss, &DepthState);
+ //   Context->OMSetDepthStencilState(DepthState, 0);
+
+ //   SetCapture(Window);
+ //   ShowCursor(FALSE);
+ //   return(true);
+
+	// Clear input
+	for (int i = 0; i < 256; i++) Platform.Key[i] = false;
+
+	WNDCLASSW wc; memset(&wc, 0, sizeof(wc));
+	wc.lpszClassName = L"OVRAppWindow";
+	wc.style = CS_OWNDC;
+	wc.lpfnWndProc = DefWindowProcW;
+	wc.cbWndExtra = sizeof(struct DirectX11 *);
+	RegisterClassW(&wc);
+
+	const DWORD wsStyle = WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME;
+	RECT winSize = { 0, 0, vp.w, vp.h };
+	AdjustWindowRect(&winSize, wsStyle, FALSE);
+	Window = CreateWindowW(L"OVRAppWindow", (L"OculusRoomTiny (DX11)"), wsStyle | WS_VISIBLE,
+		CW_USEDEFAULT, CW_USEDEFAULT, winSize.right - winSize.left, winSize.bottom - winSize.top,
+		NULL, NULL, hinst, NULL);
+	if (!Window) return(false);
+	SetWindowLongPtr(Window, 0, LONG_PTR(this));
+
+	WinSize = vp.GetSize();
+
+	IDXGIFactory * DXGIFactory;
+	IDXGIAdapter * Adapter;
+	if (FAILED(CreateDXGIFactory1(__uuidof(IDXGIFactory), (void**)(&DXGIFactory))))
+	return(false);
+	if (FAILED(DXGIFactory->EnumAdapters(0, &Adapter)))
+	return(false);
+	if (FAILED(D3D11CreateDevice(Adapter, Adapter ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE,
+		NULL, 0, NULL, 0, D3D11_SDK_VERSION, &Device, NULL, &Context)))
+		return(false);
+
+	// Create swap chain
+	DXGI_SWAP_CHAIN_DESC scDesc; memset(&scDesc, 0, sizeof(scDesc));
+	scDesc.BufferCount = 2;
+	scDesc.BufferDesc.Width = WinSize.w;
+	scDesc.BufferDesc.Height = WinSize.h;
+	scDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	scDesc.BufferDesc.RefreshRate.Numerator = 0;
+	scDesc.BufferDesc.RefreshRate.Denominator = 1;
+	scDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	scDesc.OutputWindow = Window;
+	scDesc.SampleDesc.Count = 1;
+	scDesc.SampleDesc.Quality = 0;
+	scDesc.Windowed = TRUE;
+	scDesc.SwapEffect = DXGI_SWAP_EFFECT_SEQUENTIAL;
+	if (FAILED(DXGIFactory->CreateSwapChain(Device, &scDesc, &SwapChain)))               return(false);
+
+	// Create backbuffer
+	if (FAILED(SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&BackBuffer))) return(false);
+	if (FAILED(Device->CreateRenderTargetView(BackBuffer, NULL, &BackBufferRT)))         return(false);
+
+	// Main depth buffer
+	MainDepthBuffer = new DepthBuffer(Sizei(WinSize.w, WinSize.h), 1);
+	Context->OMSetRenderTargets(1, &BackBufferRT, MainDepthBuffer->TexDsv);
+
+	// Buffer for shader constants
+	UniformBufferGen = new DataBuffer(D3D11_BIND_CONSTANT_BUFFER, NULL, 2000);
+	Context->VSSetConstantBuffers(0, 1, &Platform.UniformBufferGen->D3DBuffer);
+
+	// Set a standard blend state, ie transparency from alpha
+	D3D11_BLEND_DESC bm;
+	memset(&bm, 0, sizeof(bm));
+	bm.RenderTarget[0].BlendEnable = TRUE;
+	bm.RenderTarget[0].BlendOp = bm.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	bm.RenderTarget[0].SrcBlend = bm.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+	bm.RenderTarget[0].DestBlend = bm.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+	bm.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	ID3D11BlendState * BlendState;
+	Device->CreateBlendState(&bm, &BlendState);
+	Context->OMSetBlendState(BlendState, NULL, 0xffffffff);
+
+	// Set max frame latency to 1
+	IDXGIDevice1* DXGIDevice1 = NULL;
+	HRESULT hr = Device->QueryInterface(__uuidof(IDXGIDevice1), (void**)&DXGIDevice1);
+	if (FAILED(hr) | (DXGIDevice1 == NULL)) return(false);
+	DXGIDevice1->SetMaximumFrameLatency(1);
+	DXGIDevice1->Release();
+
+	return(true);
 }
 
 void DirectX11::ClearAndSetRenderTarget(ID3D11RenderTargetView * rendertarget, struct DepthBuffer * depthbuffer, OVR::Recti vp)
