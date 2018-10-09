@@ -1,0 +1,6 @@
+﻿  buffer.c
+  hde64.c
+  hook.c
+  trampoline.c
+  Generating Code...
+  libMinHook.vcxproj -> D:\MyWork\From-liangdefeng\LibOVR\LibOVRWrapper\lib\Debug\libMinHook.x64.lib

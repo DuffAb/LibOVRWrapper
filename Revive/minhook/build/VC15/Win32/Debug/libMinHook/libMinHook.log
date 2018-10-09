@@ -1,0 +1,6 @@
+﻿  buffer.c
+  hde32.c
+  hook.c
+  trampoline.c
+  Generating Code...
+  libMinHook.vcxproj -> D:\Revive-1.1.1\minhook\build\VC15\lib\Debug\libMinHook.x86.lib

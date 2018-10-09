@@ -1,0 +1,5 @@
+﻿     Creating library D:\Revive-1.1.1\minhook\build\VC15\bin\Release\MinHook.x64.lib and object D:\Revive-1.1.1\minhook\build\VC15\bin\Release\MinHook.x64.exp
+  Generating code
+  All 38 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  MinHook.vcxproj -> D:\Revive-1.1.1\minhook\build\VC15\bin\Release\MinHook.x64.dll

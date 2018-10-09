@@ -1,0 +1,5 @@
+﻿  buffer.c
+  hde32.c
+  hook.c
+  trampoline.c
+  libMinHook.vcxproj -> D:\MyWork\From-jianwei\HookLib\Revive-master\lib\Release\libMinHook.x86.lib
